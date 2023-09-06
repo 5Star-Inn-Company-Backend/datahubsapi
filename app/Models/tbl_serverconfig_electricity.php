@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class tbl_serverconfig_electricity extends Model
 {
     use HasFactory;
+
+    protected $table='tbl_serverconfig_electricitys';
 }

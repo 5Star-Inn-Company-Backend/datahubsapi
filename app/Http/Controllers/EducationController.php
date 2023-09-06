@@ -2,35 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\tbl_serverconfig_data;
-use App\Models\tbl_serverconfig_airtime;
 use App\Models\tbl_serverconfig_cabletv;
 use App\Models\tbl_serverconfig_education;
-use App\Models\tbl_serverconfig_electricity;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class DataController extends Controller
+class EducationController extends Controller
 {
-
-    public function listAll($network, $category)
+    public function listAll()
     {
-        $datas = tbl_serverconfig_data::where([['network', $network],['category', $category],['status', 1]])->get();
+        $datas = tbl_serverconfig_education::get()->makeHidden(['amount','plan_id','server']);
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
             'data' => $datas,
-        ], 200);
+        ]);
     }
 
-    public function purchasedata(Request $request)
+
+    public function purchase(Request $request)
     {
         $input = $request->all();
         $rules = array(
             "networkID" => "required",
-            "phone" => "required|min:11",
         );
 
         $validator = Validator::make($input, $rules);
@@ -39,7 +33,7 @@ class DataController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-        $airtimes = tbl_serverconfig_data::where([['id', $input['networkID']], ['status',1]])->first();
+        $airtimes = tbl_serverconfig_education::where([['id', $input['networkID']], ['status',1]])->first();
 
         if(!$airtimes){
             return response()->json([
@@ -52,16 +46,6 @@ class DataController extends Controller
             'status' => true,
             'message' => "Transaction successful",
         ], 200);
-    }
-
-    public function datatypes($network)
-    {
-        $datatypes = tbl_serverconfig_data::select('category')->where([['network', $network], ['status', 1]])->distinct()->get();
-
-        return response()->json([
-            'status' => true,
-            'data' => $datatypes
-        ]);
     }
 
 }

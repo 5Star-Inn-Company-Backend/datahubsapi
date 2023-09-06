@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\CableTVController;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\ElectricityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
@@ -24,17 +26,21 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('list-airtime', [AirtimeController::class, 'listAll']);
     Route::post('purchase-airtime', [AirtimeController::class, 'purchaseairtime']);
 
-    Route::get('list-tv', [CableTVController::class, 'tvlist']);
+    Route::get('list-data/{network}/{category}', [DataController::class, 'listAll']);
+    Route::post('purchase-data', [DataController::class, 'purchasedata']);
+    Route::get('types-data/{network}', [DataController::class, 'datatypes']);
+
+    Route::get('list-tv/{network}', [CableTVController::class, 'tvlist']);
     Route::post('validate-tv', [CableTVController::class, 'tvvalidate']);
-    Route::get('purchase-tv', [CableTVController::class, 'tvlist']);
+    Route::post('purchase-tv', [CableTVController::class, 'tvpurchase']);
 
-    Route::get('allnetworks', [DataController::class, 'networks']);
-    Route::get('datatypes', [DataController::class, 'datatypes']);
-    Route::get('scratchcards', [DataController::class, 'scratchcards']);
-    Route::get('electricity', [DataController::class, 'electricity']);
+    Route::get('list-education', [EducationController::class, 'listAll']);
+    Route::post('purchase-education', [EducationController::class, 'purchase']);
 
-    Route::post('purchasedata', [DataController::class, 'purchasedata']);
-    Route::post('cablesubscribe', [DataController::class, 'cablesubscribe']);
-    Route::post('electricitypay', [DataController::class, 'electricitypay']);
-    Route::post('scratchcard' , [DataController::class, 'scratchcard']);
+    Route::get('list-electricity', [ElectricityController::class, 'listAll']);
+    Route::post('validate-electricity', [ElectricityController::class, 'elecvalidate']);
+    Route::post('purchase-electricity', [ElectricityController::class, 'purchase']);
+
+    Route::post('purchase-electricity', [ElectricityController::class, 'purchase']);
+
 });

@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\tbl_serverconfig_cabletv;
+use App\Models\tbl_serverconfig_electricity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CableTVController extends Controller
+class ElectricityController extends Controller
 {
-
-    public function tvlist($network)
+    public function listAll()
     {
-
-        $cabletvs = tbl_serverconfig_cabletv::where([['type', $network],['status', 1]])->get();
+        $datas = tbl_serverconfig_electricity::get()->makeHidden(['server', 'code10']);
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
-            'data' => $cabletvs
+            'data' => $datas,
         ]);
     }
 
-    public function tvvalidate(Request $request)
+
+    public function elecvalidate(Request $request)
     {
         $input = $request->all();
         $rules = array(
-            "networkID" => "required|in:dstv,gotv,startimes",
+            "networkID" => "required",
+            "type" => "required|in:prepaid,postpaid",
             "phone" => "required|min:10",
         );
 
@@ -34,11 +34,11 @@ class CableTVController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-//        $cabletvtypes = tbl_serverconfig_cabletv::where([['id',$input['networkID']],['status', 1]])->first();
-//
-//        if(!$cabletvtypes){
-//            return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
-//        }
+        $types = tbl_serverconfig_electricity::where([['id',$input['networkID']],['status', 1]])->first();
+
+        if(!$types){
+            return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
+        }
 
         $curl = curl_init();
 
@@ -51,7 +51,7 @@ class CableTVController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('billersCode' => $input['phone'],'serviceID' => $input['networkID']),
+            CURLOPT_POSTFIELDS => array('billersCode' => $input['phone'],'serviceID' => $types->code,'type' => $input['type']),
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Basic ' .env('SERVER6_AUTH'),
             ),
@@ -76,12 +76,14 @@ class CableTVController extends Controller
 
     }
 
-    public function tvpurchase(Request $request)
+
+    public function purchase(Request $request)
     {
         $input = $request->all();
         $rules = array(
             "networkID" => "required",
-            "phone" => "required|min:10",
+            "type" => "required|in:prepaid,postpaid",
+            "phone" => "required|min:11",
         );
 
         $validator = Validator::make($input, $rules);
@@ -90,17 +92,19 @@ class CableTVController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-        $cabletvtypes = tbl_serverconfig_cabletv::where([['id',$input['networkID']],['status', 1]])->first();
+        $airtimes = tbl_serverconfig_electricity::where([['id', $input['networkID']], ['status',1]])->first();
 
-        if(!$cabletvtypes){
-            return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
+        if(!$airtimes){
+            return response()->json([
+                'status' => false,
+                'message' => "Network ID not valid or available",
+            ], 200);
         }
 
         return response()->json([
             'status' => true,
             'message' => "Transaction successful",
-        ]);
-
+        ], 200);
     }
 
 
