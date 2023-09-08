@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\CableTVController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ElectricityController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RechargeCardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
@@ -41,6 +44,15 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('validate-electricity', [ElectricityController::class, 'elecvalidate']);
     Route::post('purchase-electricity', [ElectricityController::class, 'purchase']);
 
-    Route::post('purchase-electricity', [ElectricityController::class, 'purchase']);
+    Route::get('list-rechargecard', [RechargeCardController::class, 'listAll']);
+    Route::post('purchase-rechargecard', [RechargeCardController::class, 'purchase']);
+
+    Route::post('bulk-sms-send', [\App\Http\Controllers\BulkSMSController::class, 'send']);
+
+    Route::get('fund-wallet-atm', [PaymentController::class, 'atm']);
+
+    Route::get('profile', [AccountController::class, 'profile']);
+    Route::post('change-password', [AccountController::class, 'changePassword']);
+    Route::post('change-pin', [AccountController::class, 'changePin']);
 
 });
