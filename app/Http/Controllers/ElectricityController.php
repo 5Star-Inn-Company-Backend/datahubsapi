@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\tbl_serverconfig_electricity;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -83,6 +84,7 @@ class ElectricityController extends Controller
         $rules = array(
             "networkID" => "required",
             "type" => "required|in:prepaid,postpaid",
+            "amount" => "required",
             "phone" => "required|min:11",
         );
 
@@ -100,6 +102,17 @@ class ElectricityController extends Controller
                 'message' => "Network ID not valid or available",
             ], 200);
         }
+
+        Transaction::create([
+            "title" => $airtimes->name." Electricity",
+            "amount" => $input['amount'],
+            "commission" => 6,
+            "reference" => rand(),
+            "recipient" => $input['phone'],
+            "remark" => "Successful",
+            "server" => "0",
+            "server_response" => "{'status':'success'}",
+        ]);
 
         return response()->json([
             'status' => true,

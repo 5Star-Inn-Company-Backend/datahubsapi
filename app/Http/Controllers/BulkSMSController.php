@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,6 +22,15 @@ class BulkSMSController extends Controller
         if (!$validator->passes()) {
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
+
+        Transaction::create([
+            "title" => "Bulk SMS",
+            "amount" => 300,
+            "reference" => rand(),
+            "remark" => $input['message'] . " | " .$input['recipients'],
+            "server" => "0",
+            "server_response" => "{'status':'success'}",
+        ]);
 
         return response()->json([
             'status' => true,

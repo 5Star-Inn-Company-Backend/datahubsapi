@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\tbl_serverconfig_cabletv;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -95,6 +96,17 @@ class CableTVController extends Controller
         if(!$cabletvtypes){
             return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
         }
+
+        Transaction::create([
+            "title" => $cabletvtypes->name,
+            "amount" => $cabletvtypes->price,
+            "commission" => 4,
+            "reference" => rand(),
+            "recipient" => $input['phone'],
+            "remark" => "Successful",
+            "server" => "0",
+            "server_response" => "{'status':'success'}",
+        ]);
 
         return response()->json([
             'status' => true,

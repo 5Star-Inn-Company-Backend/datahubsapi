@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Airtime2CashController;
 use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\CableTVController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ElectricityController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RechargeCardController;
+use App\Http\Controllers\TransactionHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
@@ -26,6 +28,9 @@ Route::post('register', [UserController::class,'register']);
 Route::post('login', [UserController::class,'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function (){
+    Route::get('list-airtime2cash', [Airtime2CashController::class, 'listAll']);
+    Route::post('purchase-airtime2cash', [Airtime2CashController::class, 'purchase']);
+
     Route::get('list-airtime', [AirtimeController::class, 'listAll']);
     Route::post('purchase-airtime', [AirtimeController::class, 'purchaseairtime']);
 
@@ -54,5 +59,10 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('profile', [AccountController::class, 'profile']);
     Route::post('change-password', [AccountController::class, 'changePassword']);
     Route::post('change-pin', [AccountController::class, 'changePin']);
+
+    Route::get('transaction-history', [TransactionHistoryController::class, 'all']);
+    Route::get('data-history', [TransactionHistoryController::class, 'data']);
+    Route::get('total-spent', [TransactionHistoryController::class, 'totalSpent']);
+    Route::get('total-fund', [TransactionHistoryController::class, 'totalFund']);
 
 });

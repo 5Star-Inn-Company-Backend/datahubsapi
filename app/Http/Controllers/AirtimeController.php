@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\tbl_serverconfig_airtime;
 use App\Models\tbl_serverconfig_data;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -43,6 +44,17 @@ class AirtimeController extends Controller
                 'message' => "Network ID not valid or available",
             ], 200);
         }
+
+        Transaction::create([
+            "title" => $airtimes->network." Airtime",
+            "amount" => $input['amount'],
+            "commission" => 3,
+            "reference" => rand(),
+            "recipient" => $input['phone'],
+            "remark" => "Successful",
+            "server" => "0",
+            "server_response" => "{'status':'success'}",
+        ]);
 
         return response()->json([
             'status' => true,

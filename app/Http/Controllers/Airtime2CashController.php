@@ -2,30 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\tbl_serverconfig_cabletv;
-use App\Models\tbl_serverconfig_education;
-use App\Models\Transaction;
+use App\Models\tbl_airtime2cash;
+use App\Models\tbl_serverconfig_airtime2cash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class EducationController extends Controller
+class Airtime2CashController extends Controller
 {
     public function listAll()
     {
-        $datas = tbl_serverconfig_education::get()->makeHidden(['amount','plan_id','server']);
+        $airtimes = tbl_serverconfig_airtime2cash::where('status', 1)->get();
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
-            'data' => $datas,
-        ]);
+            'data' => $airtimes,
+        ], 200);
     }
-
 
     public function purchase(Request $request)
     {
         $input = $request->all();
         $rules = array(
             "networkID" => "required",
+            "amount" => "required",
+            "phone" => "required|min:11",
+            "type" => "required|in:bank,wallet",
         );
 
         $validator = Validator::make($input, $rules);
@@ -34,7 +36,7 @@ class EducationController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-        $airtimes = tbl_serverconfig_education::where([['id', $input['networkID']], ['status',1]])->first();
+        $airtimes = tbl_serverconfig_airtime2cash::where([['id', $input['networkID']], ['status',1]])->first();
 
         if(!$airtimes){
             return response()->json([
@@ -43,21 +45,20 @@ class EducationController extends Controller
             ], 200);
         }
 
-
-        Transaction::create([
-            "title" => $airtimes->name." Education",
-            "amount" => $airtimes->amount,
+        tbl_airtime2cash::create([
+            "network" => $airtimes->network,
+            "amount" => $input['amount'],
+            "phoneno" => $input['phone'],
+            "receiver" => $input['type'],
+            "user_id" => Auth::id(),
             "reference" => rand(),
-            "remark" => "Successful",
-            "server" => "0",
-            "server_response" => "{'status':'success'}",
+            "ip" => $request->ip()
         ]);
-
 
         return response()->json([
             'status' => true,
-            'message' => "Transaction successful",
-        ], 200);
+            'message' => "Transfer the airtime to this number",
+            'data' => $airtimes->number
+        ]);
     }
-
 }

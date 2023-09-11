@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\tbl_serverconfig_rechargecard;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +41,17 @@ class RechargeCardController extends Controller
                 'message' => "Network ID not valid or available",
             ], 200);
         }
+
+
+        Transaction::create([
+            "title" => $airtimes->network."_" .$airtimes->amount." RC",
+            "amount" => $airtimes->amount,
+            "commission" => 6,
+            "reference" => rand(),
+            "remark" => $input['quantity'],
+            "server" => "0",
+            "server_response" => "{'status':'success'}",
+        ]);
 
 //        $payload='{
 //    "network": "AIRTEL",
