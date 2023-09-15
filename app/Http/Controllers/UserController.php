@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CreateWallets;
 use App\Models\virtual_acct;
 use Carbon\Carbon;
 use App\Models\User;
@@ -46,6 +47,7 @@ class UserController extends Controller
         if($user->save()){
 
             CreateVirtualAccount::dispatch($user);
+            CreateWallets::dispatch($user->id);
 
             return response()->json([
                 'status' => true,

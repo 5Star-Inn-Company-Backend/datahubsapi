@@ -6,9 +6,12 @@ use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\CableTVController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ElectricityController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RechargeCardController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
@@ -59,10 +62,23 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('profile', [AccountController::class, 'profile']);
     Route::post('change-password', [AccountController::class, 'changePassword']);
     Route::post('change-pin', [AccountController::class, 'changePin']);
+    Route::post('kyc', [AccountController::class, 'kyc']);
+    Route::get('bank-list', [AccountController::class, 'banklist']);
 
     Route::get('transaction-history', [TransactionHistoryController::class, 'all']);
     Route::get('data-history', [TransactionHistoryController::class, 'data']);
     Route::get('total-spent', [TransactionHistoryController::class, 'totalSpent']);
     Route::get('total-fund', [TransactionHistoryController::class, 'totalFund']);
+
+    Route::get('wallets', [WalletController::class, 'listAll']);
+    Route::get('vaccts', [WalletController::class, 'listVAccts']);
+
+    Route::get('packages', [PackageController::class, 'packages']);
+    Route::get('current-package', [PackageController::class, 'currentPackage']);
+    Route::post('change-package', [PackageController::class, 'changePackage']);
+
+    Route::get('list-faqs', [FaqController::class, 'listAll']);
+    Route::post('like-faq', [FaqController::class, 'likeFaq']);
+
 
 });
