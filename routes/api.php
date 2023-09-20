@@ -29,6 +29,8 @@ use App\Http\Controllers\UserController;
 */
 Route::post('register', [UserController::class,'register']);
 Route::post('login', [UserController::class,'login']);
+Route::post('reset-password-request', [UserController::class,'forgotPassword']);
+Route::post('reset-password', [UserController::class,'reset']);
 
 Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('list-airtime2cash', [Airtime2CashController::class, 'listAll']);
