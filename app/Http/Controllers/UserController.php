@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Jobs\CreateVirtualAccount;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -123,13 +124,23 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-        $status = Password::sendResetLink(
-            $request->only('email')
+        $user=User::where('email',$request->only('email'))->first();
+
+        $token = Password::createToken(
+            $user
         );
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['status' => true, 'message' => 'Reset password link sent on your email id.'])
-            : response()->json(['status' => false, 'message' => 'Unable to send reset password link']);
+        Mail::to($request->only('email'))->send(new \App\Mail\PasswordReset($token));
+
+        return response()->json(['status' => true, 'message' => 'Reset password link sent on your email id.']);
+
+//      $status = Password::sendResetLink(
+//            $request->only('email')
+//        );
+//
+//        return $status === Password::RESET_LINK_SENT
+//            ? response()->json(['status' => true, 'message' => 'Reset password link sent on your email id.'])
+//            : response()->json(['status' => false, 'message' => 'Unable to send reset password link']);
     }
 
 
