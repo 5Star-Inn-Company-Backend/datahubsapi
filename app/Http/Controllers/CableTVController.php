@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\MCDPurchaseTVJob;
 use App\Models\tbl_serverconfig_cabletv;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CableTVController extends Controller
@@ -97,16 +100,53 @@ class CableTVController extends Controller
             return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
         }
 
-        Transaction::create([
+
+        $wallet=Wallet::where([['user_id',Auth::id()], ['status',1]])->first();
+
+        if(!$wallet){
+            return response()->json([
+                'status' => false,
+                'message' => "No valid wallet",
+            ], 200);
+        }
+
+
+        if($wallet->balance < 1){
+            return response()->json([
+                'status' => false,
+                'message' => "Insufficient balance. Kindly topup your wallet",
+            ], 200);
+        }
+
+        $oBal=$wallet->balance;
+        $amount=$cabletvtypes->price;
+
+        if($amount > $wallet->balance){
+            return response()->json([
+                'status' => false,
+                'message' => "Insufficient balance to handle request. Kindly topup your wallet",
+            ], 200);
+        }
+
+        $wallet->balance -=$amount;
+        $wallet->save();
+
+
+        $t=Transaction::create([
+            "user_id" => Auth::id(),
             "title" => $cabletvtypes->name,
-            "amount" => $cabletvtypes->price,
+            "amount" => $amount,
             "commission" => 4,
             "reference" => rand(),
             "recipient" => $input['phone'],
-            "remark" => "Successful",
+            "remark" => "Pending",
             "server" => "0",
-            "server_response" => "{'status':'success'}",
+            "server_response" => "",
+            "prev_balance" => $oBal,
+            "new_balance" => $wallet->balance,
         ]);
+
+        MCDPurchaseTVJob::dispatch($cabletvtypes,$t);
 
         return response()->json([
             'status' => true,
