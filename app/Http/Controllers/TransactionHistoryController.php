@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionHistoryController extends Controller
 {
     public function all()
     {
-        $airtimes = Transaction::latest()->get();
+        $airtimes = Transaction::where('user_id',Auth::id())->latest()->limit(100)->get();
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
