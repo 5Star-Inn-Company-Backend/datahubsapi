@@ -22,7 +22,7 @@ class MCDPurchaseElectricityJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+//    public $tries = 1;
 
     public $config, $transaction;
     /**
