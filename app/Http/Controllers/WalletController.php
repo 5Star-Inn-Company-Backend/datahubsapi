@@ -19,6 +19,23 @@ class WalletController extends Controller
         ], 200);
     }
 
+    public function wBalance()
+    {
+        $airtimes = Wallet::where([['status', 1], ['user_id', Auth::id()], ['name','wallet']])->first();
+
+        if(!$airtimes){
+            return response()->json([
+                'status' => false,
+                'message' => 'Wallet not found',
+            ], 200);
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Fetched successfully',
+            'data' => $airtimes->balance,
+        ], 200);
+    }
+
 
     public function listVAccts()
     {

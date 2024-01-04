@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('total-fund', [TransactionHistoryController::class, 'totalFund']);
 
     Route::get('wallets', [WalletController::class, 'listAll']);
+    Route::get('wallet-balance', [WalletController::class, 'wBalance']);
     Route::get('vaccts', [WalletController::class, 'listVAccts']);
 
     Route::get('packages', [PackageController::class, 'packages']);
