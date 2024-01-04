@@ -22,6 +22,7 @@ class Cors
         header("Access-Control-Allow-Origin: ".env('ALLOWED_ORIGIN'));
         //ALLOW OPTIONS METHOD
         $headers = [
+            "Access-Control-Allow-Origin" => env('ALLOWED_ORIGIN'),
             'Access-Control-Allow-Methods' => 'POST,GET,OPTIONS,PUT,DELETE',
             'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin, Authorization',
         ];
