@@ -5,13 +5,13 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Models\virtual_acct;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-class CreateVirtualAccount implements ShouldQueue
+class MCDCreateVirtualAccount implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,11 +31,10 @@ class CreateVirtualAccount implements ShouldQueue
     public function handle(): void
     {
 
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.paylony.com/api/v1/create_account',
+            CURLOPT_URL => env('MCD_URL').'/virtual-account3',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -44,19 +43,21 @@ class CreateVirtualAccount implements ShouldQueue
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => '{
-                 "firstname":" '. $this->user->firstname .' ",
-                 "lastname":" '. $this->user->lastname .' ",
-                  "address":" '. $this->user->address .' ",
-                 "gender":" '. $this->user->gender .' ",
-                 "email":" '. $this->user->email .' ",
-                 "phone":" '. $this->user->phone .' ",
-                 "dob":" '. $this->user->dob .' ",
-                "bvn":"",
-                "provider":"safehaven"
+                 "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .' ",
+                 "account_name":"'. $this->user->firstname .' '. $this->user->lastname .'",
+                 "business_short_name":" '.env('BUSINESS_SHORT_NAME') .' ",
+                 "address":"'.$this->user->address .'",
+                 "gender":"'.$this->user->gender .' ",
+                 "email":"'.$this->user->email .'",
+                 "phone":"'.$this->user->phone .'",
+                 "dob":"'.$this->user->dob .'",
+                 "webhook_url":"'.env('APP_URL').'/ap/hook/mcdpayment",
+                "bvn":"'.$this->user->bvn .'",
+                "provider":"'.env('MCD_BANK').'"
             }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer sk_test_pqvard3tkffusqzvlsten58f4rwduzedzevowik'
+                'Authorization: Bearer '.env('MCD_TOKEN')
             ),
         ));
 
@@ -65,18 +66,18 @@ class CreateVirtualAccount implements ShouldQueue
         curl_close($curl);
           echo $response;
 
-         $responseData = json_decode($response, true);
+        $responseData = json_decode($response, true);
 
-         if ($responseData['success'] && $responseData['status'] === '00') {
+        if ($responseData['success'] == 1) {
             virtual_acct::create([
                 'user_id' => $this->user->id,
-                'account_name' => $responseData['data']['account_name'],
+                'account_name' => $responseData['data']['customer_name'],
                 'account_number' => $responseData['data']['account_number'],
-                'provider' => $responseData['data']['provider'],
-                'domain' => $responseData['data']['domain'],
-                'reference' => $responseData['data']['reference'],
-                'assignment' => $responseData['data']['assignment'],
-                'status' => $responseData['data']['status'],
+                'provider' => $responseData['data']['bank_name'],
+                'domain' => 'live',
+                'reference' => $responseData['data']['account_reference'],
+                'assignment' => 'reserved',
+                'status' => 'active',
 
             ]);
 

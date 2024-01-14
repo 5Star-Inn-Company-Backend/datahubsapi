@@ -7,6 +7,7 @@ use App\Http\Controllers\CableTVController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ElectricityController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\MCDPaymentWebhookController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RechargeCardController;
@@ -82,6 +83,9 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
 
     Route::get('list-faqs', [FaqController::class, 'listAll']);
     Route::post('like-faq', [FaqController::class, 'likeFaq']);
+
+
+    Route::post('hook/mcdpayment', [MCDPaymentWebhookController::class, 'index']);
 
 
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\CreateWallets;
+use App\Jobs\MCDCreateVirtualAccount;
 use App\Models\virtual_acct;
 use Carbon\Carbon;
 use App\Models\User;
@@ -47,10 +48,16 @@ class UserController extends Controller
         $user->dob = $request->dob;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->save();
+//        $user->save();
+
         if($user->save()){
 
-            CreateVirtualAccount::dispatch($user);
+            if(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'test'){
+                CreateVirtualAccount::dispatch($user);
+            }else{
+                MCDCreateVirtualAccount::dispatch($user);
+            }
+
             CreateWallets::dispatch($user->id);
 
             return response()->json([
