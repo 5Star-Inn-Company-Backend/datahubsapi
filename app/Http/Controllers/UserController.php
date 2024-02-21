@@ -36,7 +36,7 @@ class UserController extends Controller
         $validator = Validator::make($input, $rules);
 
         if (!$validator->passes()) {
-            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
+            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()],422);
         }
 
         $user = new User();
@@ -85,7 +85,7 @@ class UserController extends Controller
         $validator = Validator::make($input, $rules);
 
         if (!$validator->passes()) {
-            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
+            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()],422);
         }
 
 
