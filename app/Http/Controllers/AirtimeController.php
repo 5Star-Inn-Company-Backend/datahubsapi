@@ -86,6 +86,7 @@ class AirtimeController extends Controller
             "commission" => 3,
             "reference" => rand(),
             "recipient" => $input['phone'],
+            "transaction_type" => "airtime",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

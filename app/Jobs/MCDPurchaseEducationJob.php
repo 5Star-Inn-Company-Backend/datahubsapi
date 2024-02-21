@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class MCDPurchaseEducationJob implements ShouldQueue
 {
@@ -48,6 +49,8 @@ class MCDPurchaseEducationJob implements ShouldQueue
     "promo":"0"
 }';
 
+        Log::info("=====MCDPurchaseEducationJob====${payload}====User(".$this->transaction->user_id.")");
+
 
         $curl = curl_init();
 
@@ -71,6 +74,8 @@ class MCDPurchaseEducationJob implements ShouldQueue
 
         curl_close($curl);
         echo $response;
+
+        Log::info($response);
 
         $rep=json_decode($response,true);
         if($rep['success'] == 1){

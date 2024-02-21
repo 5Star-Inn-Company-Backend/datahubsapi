@@ -139,6 +139,7 @@ class CableTVController extends Controller
             "commission" => 4,
             "reference" => rand(),
             "recipient" => $input['phone'],
+            "transaction_type" => "cabletv",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

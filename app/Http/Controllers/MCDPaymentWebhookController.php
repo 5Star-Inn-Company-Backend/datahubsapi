@@ -56,7 +56,7 @@ class MCDPaymentWebhookController extends Controller
 
         if($fc){
             if($fc->charges_type == 1){
-                $charges=(($fc/100) * $amount);
+                $charges=(($fc->charges/100) * $amount);
             }else{
                 $charges=$fc->charges;
             }
@@ -78,6 +78,7 @@ class MCDPaymentWebhookController extends Controller
             "commission" => 0,
             "reference" => $input['ref'],
             "recipient" => $input['account_number'],
+            "transaction_type" => "wallet_funding",
             "remark" => "Credited",
             "type" => "credit",
             "server" => "0",

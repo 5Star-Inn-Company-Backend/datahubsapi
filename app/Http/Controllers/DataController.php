@@ -85,11 +85,12 @@ class DataController extends Controller
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
-            "title" => $airtimes->network." Data",
+            "title" => $airtimes->name,
             "amount" => $airtimes->amount,
             "commission" => 0,
             "reference" => rand(),
             "recipient" => $input['phone'],
+            "transaction_type" => "data",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

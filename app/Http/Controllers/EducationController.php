@@ -85,6 +85,7 @@ class EducationController extends Controller
             "commission" => 0,
             "reference" => rand(),
             "recipient" => '0',
+            "transaction_type" => "education",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

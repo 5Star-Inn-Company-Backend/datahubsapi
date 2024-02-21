@@ -145,6 +145,7 @@ class ElectricityController extends Controller
             "commission" => 2,
             "reference" => rand(),
             "recipient" => $input['phone'],
+            "transaction_type" => "electricity",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

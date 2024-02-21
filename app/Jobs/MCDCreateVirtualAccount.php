@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class MCDCreateVirtualAccount implements ShouldQueue
 {
@@ -31,6 +32,24 @@ class MCDCreateVirtualAccount implements ShouldQueue
     public function handle(): void
     {
 
+        $payload='{
+                 "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .' ",
+                 "account_name":"'. $this->user->firstname .' '. $this->user->lastname .'",
+                 "business_short_name":" '.env('BUSINESS_SHORT_NAME') .' ",
+                 "address":"'.$this->user->address .'",
+                 "gender":"'.$this->user->gender .' ",
+                 "email":"'.$this->user->email .'",
+                 "phone":"'.$this->user->phone .'",
+                 "dob":"'.$this->user->dob .'",
+                 "webhook_url":"'.env('APP_URL').'/api/hook/mcdpayment",
+                "bvn":"'.$this->user->bvn .'",
+                "provider":"'.env('MCD_BANK').'"
+            }';
+
+
+        Log::info("=====MCDCreateVirtualAccount====${payload}");
+
+
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -42,19 +61,7 @@ class MCDCreateVirtualAccount implements ShouldQueue
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
-                 "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .' ",
-                 "account_name":"'. $this->user->firstname .' '. $this->user->lastname .'",
-                 "business_short_name":" '.env('BUSINESS_SHORT_NAME') .' ",
-                 "address":"'.$this->user->address .'",
-                 "gender":"'.$this->user->gender .' ",
-                 "email":"'.$this->user->email .'",
-                 "phone":"'.$this->user->phone .'",
-                 "dob":"'.$this->user->dob .'",
-                 "webhook_url":"'.env('APP_URL').'/ap/hook/mcdpayment",
-                "bvn":"'.$this->user->bvn .'",
-                "provider":"'.env('MCD_BANK').'"
-            }',
+            CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Authorization: Bearer '.env('MCD_TOKEN')
@@ -65,6 +72,8 @@ class MCDCreateVirtualAccount implements ShouldQueue
 
         curl_close($curl);
           echo $response;
+
+        Log::info($response);
 
         $responseData = json_decode($response, true);
 

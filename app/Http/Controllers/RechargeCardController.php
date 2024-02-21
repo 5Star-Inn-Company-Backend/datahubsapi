@@ -84,6 +84,7 @@ class RechargeCardController extends Controller
             "commission" => 6,
             "reference" => rand(),
             "recipient" => $input['quantity'],
+            "transaction_type" => "rechargecard",
             "remark" => "Pending",
             "server" => "0",
             "server_response" => "",

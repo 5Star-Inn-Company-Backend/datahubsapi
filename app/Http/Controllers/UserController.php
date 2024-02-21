@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CreateWallets;
 use App\Jobs\MCDCreateVirtualAccount;
+use App\Models\FundingConfig;
 use App\Models\virtual_acct;
 use Carbon\Carbon;
 use App\Models\User;
@@ -98,11 +99,14 @@ class UserController extends Controller
             $token = $tokenresult->plainTextToken;
             $expires_at = Carbon::now()->addweeks(1);
             $vaccounts=virtual_acct::where([['user_id', Auth::id()], ['status', 'active']])->get();
+            $fc=FundingConfig::where('name','Bank Transfer')->first();
+
             return response()->json([
                 'status' => true,
                 "data" => [
                     "user" => Auth::user(),
                     "vaccounts" => $vaccounts,
+                    "funding_config" => $fc,
                     "access_token" => $token,
                     "token_type" => "Bearer",
                     "expires_at" => $expires_at,

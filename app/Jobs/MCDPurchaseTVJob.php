@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class MCDPurchaseTVJob implements ShouldQueue
 {
@@ -48,6 +49,8 @@ class MCDPurchaseTVJob implements ShouldQueue
     "ref":"'.$this->transaction->reference.'"
 }';
 
+        Log::info("=====MCDPurchaseTVJob====${payload}====User(".$this->transaction->user_id.")");
+
 
         $curl = curl_init();
 
@@ -71,6 +74,8 @@ class MCDPurchaseTVJob implements ShouldQueue
 
         curl_close($curl);
         echo $response;
+
+        Log::info($response);
 
         $rep=json_decode($response,true);
         if($rep['success'] == 1){
