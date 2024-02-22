@@ -86,7 +86,6 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('like-faq', [FaqController::class, 'likeFaq']);
 
 
-    Route::post('hook/mcdpayment', [MCDPaymentWebhookController::class, 'index']);
-
-
 });
+
+Route::post('hook/mcdpayment', [MCDPaymentWebhookController::class, 'index']);
