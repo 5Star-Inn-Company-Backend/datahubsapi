@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CreateVirtualAccount;
+use App\Jobs\MCDCreateVirtualAccount;
 use App\Models\virtual_acct;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
@@ -44,6 +46,30 @@ class WalletController extends Controller
             'status' => true,
             'message' => 'Fetched successfully',
             'data' => $airtimes,
+        ], 200);
+    }
+
+    public function generateVAccts()
+    {
+        $user=Auth::user();
+        $vaccts = virtual_acct::where([['status', 'active'], ['user_id', Auth::id()]])->count();
+
+        if($vaccts > 0){
+            return response()->json([
+                'status' => false,
+                'message' => 'You have an active virtual account already. Kindly logout and login again.',
+            ], 200);
+        }
+
+        if(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'test'){
+            CreateVirtualAccount::dispatch($user);
+        }else{
+            MCDCreateVirtualAccount::dispatch($user);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Account generation in progress, it might take 5 minutes or more.',
         ], 200);
     }
 

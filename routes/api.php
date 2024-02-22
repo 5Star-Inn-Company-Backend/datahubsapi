@@ -76,6 +76,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('wallets', [WalletController::class, 'listAll']);
     Route::get('wallet-balance', [WalletController::class, 'wBalance']);
     Route::get('vaccts', [WalletController::class, 'listVAccts']);
+    Route::get('generate-vaccts', [WalletController::class, 'generateVAccts']);
 
     Route::get('packages', [PackageController::class, 'packages']);
     Route::get('current-package', [PackageController::class, 'currentPackage']);
