@@ -33,11 +33,11 @@ class MCDCreateVirtualAccount implements ShouldQueue
     {
 
         $payload='{
-                 "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .' ",
+                 "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .'",
                  "account_name":"'. $this->user->firstname .' '. $this->user->lastname .'",
-                 "business_short_name":" '.env('BUSINESS_SHORT_NAME') .' ",
+                 "business_short_name":" '.env('BUSINESS_SHORT_NAME') .'",
                  "address":"'.$this->user->address .'",
-                 "gender":"'.$this->user->gender .' ",
+                 "gender":"'.$this->user->gender .'",
                  "email":"'.$this->user->email .'",
                  "phone":"'.$this->user->phone .'",
                  "dob":"'.$this->user->dob .'",
