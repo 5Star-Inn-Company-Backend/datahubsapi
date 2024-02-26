@@ -48,6 +48,7 @@ class MCDPurchaseElectricityJob implements ShouldQueue
     "amount": "'.$this->transaction->amount.'",
     "payment" : "wallet",
     "promo" : "0",
+    "reseller_price":"'.$this->transaction->amount.'",
     "ref":"'.$this->transaction->reference.'"
 }';
 

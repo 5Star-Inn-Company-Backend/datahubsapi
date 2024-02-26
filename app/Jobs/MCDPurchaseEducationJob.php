@@ -46,6 +46,7 @@ class MCDPurchaseEducationJob implements ShouldQueue
     "ref": "'.$this->transaction->reference.'",
     "number": "0",
     "payment": "wallet",
+    "reseller_price":"'.$this->transaction->amount.'",
     "promo":"0"
 }';
 
