@@ -30,7 +30,7 @@ class UserController extends Controller
             "gender" => "required",
             "email" => "required|email|unique:users",
             "dob" => "required",
-            "phone" => "required",
+            "phone" => "required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10",
             "password" => "required|min:6|string",
         );
 
@@ -49,7 +49,7 @@ class UserController extends Controller
         $user->dob = $request->dob;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-//        $user->save();
+        //        $user->save();
 
         if($user->save()){
 
