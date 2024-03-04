@@ -49,6 +49,7 @@ class MCDPurchaseAirtimeJob implements ShouldQueue
     "payment" : "wallet",
     "promo" : "0",
     "ref":"'.$this->transaction->reference.'",
+    "reseller_price":"'.$this->transaction->amount.'",
     "operatorID": 0
 }';
 
