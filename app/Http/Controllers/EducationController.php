@@ -77,13 +77,14 @@ class EducationController extends Controller
         $wallet->balance -=$amount;
         $wallet->save();
 
+        $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $airtimes->name." Education",
             "amount" => $amount,
             "commission" => 0,
-            "reference" => rand(),
+            "reference" => $ref,
             "recipient" => '0',
             "transaction_type" => "education",
             "remark" => "Pending",

@@ -75,6 +75,7 @@ class RechargeCardController extends Controller
         $wallet->balance -=$amount;
         $wallet->save();
 
+        $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
 
         $t=Transaction::create([
@@ -82,7 +83,7 @@ class RechargeCardController extends Controller
             "title" => $airtimes->network."_" .$airtimes->amount." RC (".$input['quantity']."cps)",
             "amount" => $amount,
             "commission" => 6,
-            "reference" => rand(),
+            "reference" => $ref,
             "recipient" => $input['quantity'],
             "transaction_type" => "rechargecard",
             "remark" => "Pending",

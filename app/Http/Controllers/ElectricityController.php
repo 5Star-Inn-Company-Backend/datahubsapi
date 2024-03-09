@@ -137,13 +137,15 @@ class ElectricityController extends Controller
         $wallet->balance -=$amount;
         $wallet->save();
 
+        $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
+
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $airtimes->name." Electricity",
             "amount" => $amount,
-            "commission" => 2,
-            "reference" => rand(),
+            "commission" => 0,
+            "reference" => $ref,
             "recipient" => $input['phone'],
             "transaction_type" => "electricity",
             "remark" => "Pending",

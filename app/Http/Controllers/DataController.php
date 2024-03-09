@@ -82,13 +82,15 @@ class DataController extends Controller
         $wallet->balance -=$amount;
         $wallet->save();
 
+        $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
+
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $airtimes->name,
             "amount" => $airtimes->amount,
             "commission" => 0,
-            "reference" => rand(),
+            "reference" => $ref,
             "recipient" => $input['phone'],
             "transaction_type" => "data",
             "remark" => "Pending",

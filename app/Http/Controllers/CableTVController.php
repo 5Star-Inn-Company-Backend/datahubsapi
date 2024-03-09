@@ -131,13 +131,14 @@ class CableTVController extends Controller
         $wallet->balance -=$amount;
         $wallet->save();
 
+        $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $cabletvtypes->name,
             "amount" => $amount,
-            "commission" => 4,
-            "reference" => rand(),
+            "commission" => 0,
+            "reference" => $ref,
             "recipient" => $input['phone'],
             "transaction_type" => "cabletv",
             "remark" => "Pending",
