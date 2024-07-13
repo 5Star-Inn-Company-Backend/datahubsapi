@@ -16,7 +16,7 @@ class CableTVController extends Controller
     public function tvlist($network)
     {
 
-        $cabletvs = tbl_serverconfig_cabletv::where([['type', $network],['status', 1]])->get();
+        $cabletvs = tbl_serverconfig_cabletv::where([['type', strtolower($network)],['status', 1]])->get();
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
