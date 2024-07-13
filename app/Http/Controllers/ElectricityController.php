@@ -47,7 +47,7 @@ class ElectricityController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('SERVER6') . "merchant-verify",
+            CURLOPT_URL => env('MCD_URL').'/validate',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -55,13 +55,16 @@ class ElectricityController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('billersCode' => $input['phone'],'serviceID' => $types->code,'type' => $input['type']),
+            CURLOPT_POSTFIELDS => '{
+    "service": "electricity",
+    "provider": "'.$types->code.'",
+    "number": "'.$input['phone'].'"
+}',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Basic ' .env('SERVER6_AUTH'),
+                'Content-Type: application/json',
+                'Authorization: Bearer '.env('MCD_TOKEN')
             ),
         ));
-
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($curl);
 
@@ -70,7 +73,7 @@ class ElectricityController extends Controller
         $rep=json_decode($response, true);
 
         try{
-            return response()->json(['status' => true, 'message' => 'Validated successfully', 'data' => $rep['content']['Customer_Name'], 'details' => $rep['content']]);
+            return response()->json(['status' => true, 'message' => 'Validated successfully', 'data' => $rep['data']]);
         }catch (\Exception $e){
             return response()->json([
                 'status' => false,

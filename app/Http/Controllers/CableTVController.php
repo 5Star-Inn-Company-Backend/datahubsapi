@@ -38,16 +38,11 @@ class CableTVController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-//        $cabletvtypes = tbl_serverconfig_cabletv::where([['id',$input['networkID']],['status', 1]])->first();
-//
-//        if(!$cabletvtypes){
-//            return response()->json(['status' => false, 'message' => "Network ID not valid or available"]);
-//        }
 
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('SERVER6') . "merchant-verify",
+            CURLOPT_URL => env('MCD_URL').'/validate',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -55,13 +50,16 @@ class CableTVController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('billersCode' => $input['phone'],'serviceID' => $input['networkID']),
+            CURLOPT_POSTFIELDS => '{
+    "service": "tv",
+    "provider": "'.$input['networkID'].'",
+    "number": "'.$input['phone'].'"
+}',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Basic ' .env('SERVER6_AUTH'),
+                'Content-Type: application/json',
+                'Authorization: Bearer '.env('MCD_TOKEN')
             ),
         ));
-
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($curl);
 
@@ -70,7 +68,7 @@ class CableTVController extends Controller
         $rep=json_decode($response, true);
 
         try{
-            return response()->json(['status' => true, 'message' => 'Validated successfully', 'data' => $rep['content']['Customer_Name'], 'details' => $rep['content']]);
+            return response()->json(['status' => true, 'message' => 'Validated successfully', 'data' => $rep['data']]);
         }catch (\Exception $e){
             return response()->json([
                 'status' => false,
