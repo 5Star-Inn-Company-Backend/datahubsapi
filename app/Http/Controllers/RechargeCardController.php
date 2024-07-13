@@ -82,7 +82,7 @@ class RechargeCardController extends Controller
             "user_id" => Auth::id(),
             "title" => $airtimes->network."_" .$airtimes->amount." RC (".$input['quantity']."cps)",
             "amount" => $amount,
-            "commission" => 6,
+            "commission" => 0,
             "reference" => $ref,
             "recipient" => $input['quantity'],
             "transaction_type" => "rechargecard",
