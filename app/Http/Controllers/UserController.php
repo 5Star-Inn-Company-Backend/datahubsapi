@@ -32,6 +32,7 @@ class UserController extends Controller
             "dob" => "required",
             "phone" => "required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|starts_with:0",
             "password" => "required|min:6|string",
+            "referal" => "sometimes",
         );
 
         $validator = Validator::make($input, $rules);
@@ -41,6 +42,19 @@ class UserController extends Controller
         }
 
         $user = new User();
+
+        if(isset($input['referal'])){
+            $fru=User::find($input['referal']);
+            if(!$fru){
+                return response()->json([
+                    'status' => false,
+                    "message" => "The referral ID supplied is invalid. Kindly correct it or leave it empty",
+                ],422);
+            }else{
+                $user->referer_id=$request->referal;
+            }
+        }
+
         $user->firstname = $request->firstname;
         $user->lastname = $request->lastname;
         $user->address = $request->address;
