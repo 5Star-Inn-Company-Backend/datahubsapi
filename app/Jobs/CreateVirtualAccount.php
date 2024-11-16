@@ -44,7 +44,7 @@ class CreateVirtualAccount implements ShouldQueue
                 "provider":"safehaven"
             }';
 
-        Log::info("=====PaylonyCreateVirtualAccountPayload====${$payload}");
+        Log::info("=====PaylonyCreateVirtualAccountPayload====$payload");
 
         $curl = curl_init();
 
@@ -68,7 +68,7 @@ class CreateVirtualAccount implements ShouldQueue
 
         curl_close($curl);
 
-        Log::info("=====PaylonyCreateVirtualAccountResponse====${$response}");
+        Log::info("=====PaylonyCreateVirtualAccountResponse====$response");
 
           echo $response;
 
