@@ -88,6 +88,20 @@ class CreateVirtualAccount implements ShouldQueue
             ]);
 
 //            echo $response;
+        } elseif ($responseData['success'] && $responseData['status'] === '08') {
+            virtual_acct::create([
+                'user_id' => $this->user->id,
+                'account_name' => $responseData['data']['account_name'],
+                'account_number' => $responseData['data']['account_number'],
+                'provider' => $responseData['data']['provider'],
+                'domain' => $responseData['data']['domain'],
+                'reference' => $responseData['data']['reference'],
+                'assignment' => $responseData['data']['assignment'],
+                'status' => $responseData['data']['status'],
+
+            ]);
+
+//            echo $response;
         } else {
 //            echo "Failed to create virtual account.";
         }
