@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
 
 class CreateVirtualAccount implements ShouldQueue
 {
@@ -31,6 +32,19 @@ class CreateVirtualAccount implements ShouldQueue
     public function handle(): void
     {
 
+        $payload='{
+                 "firstname":" '. $this->user->firstname .' ",
+                 "lastname":" '. $this->user->lastname .' ",
+                  "address":" '. $this->user->address .' ",
+                 "gender":" '. $this->user->gender .' ",
+                 "email":" '. $this->user->email .' ",
+                 "phone":" '. $this->user->phone .' ",
+                 "dob":" '. $this->user->dob .' ",
+                "bvn":"",
+                "provider":"safehaven"
+            }';
+
+        Log::info("=====PaylonyCreateVirtualAccountPayload====${$payload}");
 
         $curl = curl_init();
 
@@ -43,17 +57,7 @@ class CreateVirtualAccount implements ShouldQueue
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
-                 "firstname":" '. $this->user->firstname .' ",
-                 "lastname":" '. $this->user->lastname .' ",
-                  "address":" '. $this->user->address .' ",
-                 "gender":" '. $this->user->gender .' ",
-                 "email":" '. $this->user->email .' ",
-                 "phone":" '. $this->user->phone .' ",
-                 "dob":" '. $this->user->dob .' ",
-                "bvn":"",
-                "provider":"safehaven"
-            }',
+            CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Authorization: Bearer sk_test_pqvard3tkffusqzvlsten58f4rwduzedzevowik'
@@ -63,6 +67,9 @@ class CreateVirtualAccount implements ShouldQueue
         $response = curl_exec($curl);
 
         curl_close($curl);
+
+        Log::info("=====PaylonyCreateVirtualAccountResponse====${$response}");
+
           echo $response;
 
          $responseData = json_decode($response, true);
