@@ -20,6 +20,16 @@ class AccountController extends Controller
         ], 200);
     }
 
+    public function referrals()
+    {
+        $user=User::where("referer_id",Auth::id())->select('firstname', 'lastname', 'phone', 'created_at as date_joined')->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Fetched successfully',
+            'data' => $user,
+        ], 200);
+    }
+
     public function kyc(Request $request)
     {
         $input = $request->all();

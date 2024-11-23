@@ -67,6 +67,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('change-pin', [AccountController::class, 'changePin']);
     Route::post('kyc', [AccountController::class, 'kyc']);
     Route::get('bank-list', [AccountController::class, 'banklist']);
+    Route::get('referrals-list', [AccountController::class, 'referrals']);
 
     Route::get('transaction-history', [TransactionHistoryController::class, 'all']);
     Route::get('data-history', [TransactionHistoryController::class, 'data']);
