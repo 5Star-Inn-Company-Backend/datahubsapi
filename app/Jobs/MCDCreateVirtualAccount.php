@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\FundingConfig;
 use App\Models\User;
 use App\Models\virtual_acct;
 use Illuminate\Bus\Queueable;
@@ -31,6 +32,13 @@ class MCDCreateVirtualAccount implements ShouldQueue
      */
     public function handle(): void
     {
+
+        $fc=FundingConfig::where('name','Bank Transfer')->first();
+
+        if($fc->provider == "MONNIFY"){
+            MonnifyCreateVirtualAccount::dispatch($this->user);
+            return;
+        }
 
         $payload='{
                  "uniqueid":" '.env('BUSINESS_SHORT_NAME'). $this->user->id .'",

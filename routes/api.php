@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('fund-wallet-atm', [PaymentController::class, 'atm']);
 
     Route::get('profile', [AccountController::class, 'profile']);
+    Route::post('profile-update', [AccountController::class, 'profileUpdate']);
     Route::post('change-password', [AccountController::class, 'changePassword']);
     Route::post('change-pin', [AccountController::class, 'changePin']);
     Route::post('kyc', [AccountController::class, 'kyc']);

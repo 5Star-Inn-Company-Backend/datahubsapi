@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\PayReferralBonusJob;
 use App\Models\FundingConfig;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\virtual_acct;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
@@ -87,6 +89,10 @@ class MCDPaymentWebhookController extends Controller
             "prev_balance" => $oBal,
             "new_balance" => $wallet->balance,
         ]);
+
+        $user=User::find($wallet->user_id);
+
+        PayReferralBonusJob::dispatch($user->id,$user->referer_id,1);
 
         return response()->json(['status' => true, 'message' => 'User credited']);
 

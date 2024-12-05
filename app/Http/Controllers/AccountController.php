@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CreateVirtualAccount;
+use App\Jobs\MCDCreateVirtualAccount;
 use App\Models\Package;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,6 +19,69 @@ class AccountController extends Controller
             'status' => true,
             'message' => 'Fetched successfully',
             'data' => Auth::user(),
+        ], 200);
+    }
+
+    public function profileUpdate(Request $request)
+    {
+        $input = $request->all();
+        $rules = array(
+            "firstname" => "sometimes",
+            "lastname" => "sometimes",
+            "address" => "sometimes",
+            "phone" => "sometimes",
+            "bvn" => "sometimes",
+            "dob" => "sometimes",
+            "gender" => "sometimes",
+        );
+
+        $validator = Validator::make($input, $rules);
+
+        if (!$validator->passes()) {
+            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
+        }
+
+        $user=User::find(Auth::id());
+
+        if(isset($input['firstname'])) {
+            $user->firstname = $input['firstname'];
+        }
+
+        if(isset($input['lastname'])) {
+            $user->lastname = $input['lastname'];
+        }
+
+        if(isset($input['address'])) {
+            $user->address = $input['address'];
+        }
+
+        if(isset($input['phone'])) {
+            $user->phone = $input['phone'];
+        }
+
+        if(isset($input['bvn'])) {
+            $user->bvn = $input['bvn'];
+
+            if(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'test'){
+                CreateVirtualAccount::dispatch($user);
+            }else{
+                MCDCreateVirtualAccount::dispatch($user);
+            }
+
+        }
+
+        if(isset($input['dob'])) {
+            $user->dob = $input['dob'];
+        }
+
+        if(isset($input['gender'])) {
+            $user->gender = $input['gender'];
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Updated successfully',
+            'data' => $user,
         ], 200);
     }
 

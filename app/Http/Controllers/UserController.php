@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CreateWallets;
 use App\Jobs\MCDCreateVirtualAccount;
+use App\Jobs\PayReferralBonusJob;
 use App\Models\FundingConfig;
 use App\Models\virtual_acct;
 use Carbon\Carbon;
@@ -74,6 +75,10 @@ class UserController extends Controller
             }
 
             CreateWallets::dispatch($user->id);
+
+            if(isset($input['referal'])){
+                PayReferralBonusJob::dispatch($user->id,$input['referal'],0);
+            }
 
             return response()->json([
                 'status' => true,

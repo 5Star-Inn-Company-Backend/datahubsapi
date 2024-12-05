@@ -36,6 +36,11 @@ class CreateWallets implements ShouldQueue
 
         Wallet::create([
             'user_id' => $this->user_id,
+            'name' => 'bonus',
+        ]);
+
+        Wallet::create([
+            'user_id' => $this->user_id,
             'name' => 'MTN SME DATA',
         ]);
 

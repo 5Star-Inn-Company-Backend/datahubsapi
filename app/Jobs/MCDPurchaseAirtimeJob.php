@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\tbl_serverconfig_airtime;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -87,6 +88,10 @@ class MCDPurchaseAirtimeJob implements ShouldQueue
             $this->transaction->remark="Successful";
             $this->transaction->server_response=$response;
             $this->transaction->save();
+
+            $user=User::find($this->transaction->user_id);
+            PayReferralBonusJob::dispatch($user->id,$user->referer_id,2);
+
         }else{
             $this->transaction->server_response=$response;
             $this->transaction->save();
