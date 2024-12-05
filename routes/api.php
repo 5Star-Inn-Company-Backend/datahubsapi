@@ -91,3 +91,4 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
 });
 
 Route::post('hook/mcdpayment', [MCDPaymentWebhookController::class, 'index']);
+Route::post('hook/monnifypayment', [\App\Http\Controllers\MonnifyPaymentWebhookController::class, 'index']);

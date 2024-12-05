@@ -12,15 +12,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class MCDPaymentWebhookController extends Controller
+class MonnifyPaymentWebhookController extends Controller
 {
     public function index(Request $request){
         $input = $request->all();
         $rules = array(
-            "account_number" => "required",
-            "account_reference" => "required",
-            "ref" => "required",
-            "amount" => "required",
+            "eventType" => "required",
+            "eventData" => "required"
         );
 
         $validator = Validator::make($input, $rules);
@@ -29,7 +27,15 @@ class MCDPaymentWebhookController extends Controller
             return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
         }
 
-        $va=virtual_acct::where('account_number',$input['account_number'])->first();
+        if($input['eventType'] != "SUCCESSFUL_TRANSACTION"){
+            return response()->json(['status' => false, 'message' => "I am not expecting you"]);
+        }
+
+        $acct_no=$input['eventData']['destinationAccountInformation']['accountNumber'];
+        $amount=$input['eventData']['amountPaid'];
+        $ref=$input['eventData']['transactionReference'];
+
+        $va=virtual_acct::where([['account_number',$acct_no], ['provider', 'monnify']])->first();
 
         if(!$va){
             return response()->json(['status' => false, 'message' => 'Thanks. Account number not found']);
@@ -44,7 +50,7 @@ class MCDPaymentWebhookController extends Controller
         }
 
 
-        $t=Transaction::where('reference',$input['ref'])->first();
+        $t=Transaction::where('reference',$ref)->first();
 
 
         if($t){
@@ -54,7 +60,6 @@ class MCDPaymentWebhookController extends Controller
         $fc=FundingConfig::where('name','Bank Transfer')->first();
 
         $charges=0;
-        $amount=$input['amount'];
 
         if($fc){
             if($fc->charges_type == 1){
@@ -78,14 +83,14 @@ class MCDPaymentWebhookController extends Controller
             "amount" => $amount,
             "charges" => $charges,
             "commission" => 0,
-            "reference" => $input['ref'],
-            "recipient" => $input['account_number'],
+            "reference" => $ref,
+            "recipient" => $acct_no,
             "transaction_type" => "wallet_funding",
             "remark" => "Credited",
             "type" => "credit",
             "server" => "0",
             "status" => 1,
-            "server_response" => "Mcd",
+            "server_response" => "Monnify",
             "prev_balance" => $oBal,
             "new_balance" => $wallet->balance,
         ]);
@@ -102,13 +107,41 @@ class MCDPaymentWebhookController extends Controller
 
 
 //{
-//    "account_number": "8218059045",
-//    "account_reference": "Gladysokiemute234202",
-//    "amount": 500,
-//    "fees": 5,
-//    "narration": "07068676694\/8218059045\/STARCOMPANY\/REN",
-//    "ref": "100004240105060155110254799207",
-//    "from_account_name": "GLADYS OKIEMUTE",
-//    "from_account_number": "XXXXXX6694",
-//    "paid_at": "2024-01-05T06:03:15.000Z"
-//}
+//    "eventType": "SUCCESSFUL_TRANSACTION",
+//    "eventData": {
+//    "product": {
+//        "reference": "1636106097661",
+//        "type": "RESERVED_ACCOUNT"
+//      },
+//      "transactionReference": "MNFY|04|20211117112842|000170",
+//      "paymentReference": "MNFY|04|20211117112842|000170",
+//      "paidOn": "2021-11-17 11:28:42.615",
+//      "paymentDescription": "Adm",
+//      "metaData": {},
+//      "paymentSourceInformation": [
+//        {
+//            "bankCode": "",
+//          "amountPaid": 3000,
+//          "accountName": "Monnify Limited",
+//          "sessionId": "e6cV1smlpkwG38Cg6d5F9B2PRnIq5FqA",
+//          "accountNumber": "0065432190"
+//        }
+//      ],
+//      "destinationAccountInformation": {
+//        "bankCode": "232",
+//        "bankName": "Sterling bank",
+//        "accountNumber": "6000140770"
+//      },
+//      "amountPaid": 3000,
+//      "totalPayable": 3000,
+//      "cardDetails": {},
+//      "paymentMethod": "ACCOUNT_TRANSFER",
+//      "currency": "NGN",
+//      "settlementAmount": "2990.00",
+//      "paymentStatus": "PAID",
+//      "customer": {
+//        "name": "John Doe",
+//        "email": "test@tester.com"
+//      }
+//    }
+//  }
