@@ -143,6 +143,15 @@ class ElectricityController extends Controller
         $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
 
+        $discount=(explode("%",$airtimes->discount)[0]/100) * $amount;
+
+        $walletB=Wallet::where([['user_id',Auth::id()], ['status',1], ['name', 'bonus']])->first();
+
+        if($walletB){
+            $walletB->balance +=$discount;
+            $walletB->save();
+        }
+
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $airtimes->name." Electricity",

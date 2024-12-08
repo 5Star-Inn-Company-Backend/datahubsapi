@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CreateVirtualAccount;
 use App\Jobs\MCDCreateVirtualAccount;
+use App\Jobs\MonnifyCreateVirtualAccount;
 use App\Models\Package;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +66,8 @@ class AccountController extends Controller
 
             if(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'test'){
                 CreateVirtualAccount::dispatch($user);
+            }elseif(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'monnify'){
+                MonnifyCreateVirtualAccount::dispatch($user);
             }else{
                 MCDCreateVirtualAccount::dispatch($user);
             }
@@ -78,6 +82,8 @@ class AccountController extends Controller
             $user->gender = $input['gender'];
         }
 
+        $user->save();
+
         return response()->json([
             'status' => true,
             'message' => 'Updated successfully',
@@ -87,11 +93,17 @@ class AccountController extends Controller
 
     public function referrals()
     {
+        $settings=Setting::where("name", "referral_action")->first();
+        $refAmount=Setting::where("name", "referral_bonus")->first();
+        $wh=$settings->value;
+
         $user=User::where("referer_id",Auth::id())->select('firstname', 'lastname', 'phone', 'created_at as date_joined')->get();
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
             'data' => $user,
+            'ref_amount' => $refAmount->value,
+            'ref_when' => $wh == 0 ? "register" : ($wh == 1 ? "funding" : ($wh == 2 ? "transaction" : "register,funding,transaction")),
         ], 200);
     }
 

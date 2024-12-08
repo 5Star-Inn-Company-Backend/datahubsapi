@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CreateWallets;
 use App\Jobs\MCDCreateVirtualAccount;
+use App\Jobs\MonnifyCreateVirtualAccount;
 use App\Jobs\PayReferralBonusJob;
 use App\Models\FundingConfig;
 use App\Models\virtual_acct;
@@ -70,6 +71,8 @@ class UserController extends Controller
 
             if(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'test'){
                 CreateVirtualAccount::dispatch($user);
+            }elseif(env('VIRTUAL_ACCOUNT_GENERATION_DOMAIN','test') == 'monnify'){
+                MonnifyCreateVirtualAccount::dispatch($user);
             }else{
                 MCDCreateVirtualAccount::dispatch($user);
             }

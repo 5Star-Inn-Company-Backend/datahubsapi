@@ -131,11 +131,21 @@ class CableTVController extends Controller
 
         $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
+        $discount=(explode("%",$cabletvtypes->discount)[0]/100) * $amount;
+
+        $walletB=Wallet::where([['user_id',Auth::id()], ['status',1], ['name', 'bonus']])->first();
+
+        if($walletB){
+            $walletB->balance +=$discount;
+            $walletB->save();
+        }
+
+
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $cabletvtypes->name,
             "amount" => $amount,
-            "commission" => 0,
+            "commission" => $discount,
             "reference" => $ref,
             "recipient" => $input['phone'],
             "transaction_type" => "cabletv",

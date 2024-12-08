@@ -48,7 +48,7 @@ class AirtimeController extends Controller
             ], 200);
         }
 
-        $wallet=Wallet::where([['user_id',Auth::id()], ['status',1]])->first();
+        $wallet=Wallet::where([['user_id',Auth::id()], ['status',1], ['name', 'wallet']])->first();
 
         if(!$wallet){
             return response()->json([
@@ -80,12 +80,20 @@ class AirtimeController extends Controller
 
         $ref=env('BUSINESS_SHORT_NAME',"dt").time().rand();
 
+        $discount=($airtimes->discount/100) * $amount;
+
+        $walletB=Wallet::where([['user_id',Auth::id()], ['status',1], ['name', 'bonus']])->first();
+
+        if($walletB){
+            $walletB->balance +=$discount;
+            $walletB->save();
+        }
 
         $t=Transaction::create([
             "user_id" => Auth::id(),
             "title" => $airtimes->network." Airtime",
             "amount" => $amount,
-            "commission" => 0,
+            "commission" => $discount,
             "reference" => $ref,
             "recipient" => $input['phone'],
             "transaction_type" => "airtime",
