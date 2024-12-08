@@ -24,7 +24,7 @@ class PayReferralBonusJob implements ShouldQueue
      */
 
     public int $user;
-    public string $referral;
+    public $referral;
     public int $location;
 
     public function __construct($user,$referral,$location)
