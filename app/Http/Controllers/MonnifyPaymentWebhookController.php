@@ -39,6 +39,8 @@ class MonnifyPaymentWebhookController extends Controller
         $amount=$input['eventData']['amountPaid'];
         $ref=$input['eventData']['transactionReference'];
         $paymentType=$input['eventData']['product']['type'];
+        $cus_email=$input['eventData']['customer']['email'];
+        $payment_method=$input['eventData']['paymentMethod'];
 
         if($paymentType == "RESERVED_ACCOUNT") {
             $va = virtual_acct::where([['account_number', $acct_no], ['domain', 'monnify']])->first();
@@ -48,13 +50,21 @@ class MonnifyPaymentWebhookController extends Controller
             }
 
             $fc=FundingConfig::where('name','Bank Transfer')->first();
+            $wallet=Wallet::where([['user_id',$va->user_id], ['name','wallet']])->first();
+
         }else{
 
+            $u=User::where("email",$cus_email)->first();
+
+            if (!$u) {
+                return response()->json(['status' => false, 'message' => 'Thanks. Customer not found']);
+            }
+
+            $acct_no=$payment_method;
+
             $fc=FundingConfig::where('name','Monnify')->first();
+            $wallet=Wallet::where([['user_id',$u->id], ['name','wallet']])->first();
         }
-
-
-        $wallet=Wallet::where([['user_id',$va->user_id], ['name','wallet']])->first();
 
 
         if(!$wallet){
