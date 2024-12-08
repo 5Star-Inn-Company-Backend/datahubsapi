@@ -24,7 +24,7 @@ class PayReferralBonusJob implements ShouldQueue
      */
 
     public int $user;
-    public int $referral;
+    public string $referral;
     public int $location;
 
     public function __construct($user,$referral,$location)
@@ -42,46 +42,49 @@ class PayReferralBonusJob implements ShouldQueue
         $user=User::find($this->user);
         $referral=$this->referral;
 
-        //0 = register; 1 = funding; 2 = transaction; 9 = any
-        $location=$this->location;
+        if($referral!=null) {
 
-        if($user->referer_bonus_paid == 1){
-            return;
-        }
+            //0 = register; 1 = funding; 2 = transaction; 9 = any
+            $location = $this->location;
 
-        $settings=Setting::where("name", "referral_action")->first();
-        $refAmount=Setting::where("name", "referral_bonus")->first();
-        $amount=$refAmount->value;
+            if ($user->referer_bonus_paid == 1) {
+                return;
+            }
 
-        if ($settings->value == $location || $settings->value == 9){
+            $settings = Setting::where("name", "referral_action")->first();
+            $refAmount = Setting::where("name", "referral_bonus")->first();
+            $amount = $refAmount->value;
 
-            $wallet=Wallet::where([['user_id',$referral], ['status',1]])->first();
+            if ($settings->value == $location || $settings->value == 9) {
 
-            $oBal=$wallet->balance;
-            $wallet->balance +=$amount;
-            $wallet->save();
+                $wallet = Wallet::where([['user_id', $referral], ['status', 1]])->first();
 
-            $ref=env('BUSINESS_SHORT_NAME',"dt")."rbonus".time();
+                $oBal = $wallet->balance;
+                $wallet->balance += $amount;
+                $wallet->save();
+
+                $ref = env('BUSINESS_SHORT_NAME', "dt") . "rbonus" . time();
 
 
-            Transaction::create([
-                "user_id" => $referral,
-                "title" => "Referral Bonus",
-                "amount" => $amount,
-                "commission" => 0,
-                "reference" => $ref,
-                "recipient" => $user->email,
-                "transaction_type" => "bonus",
-                "remark" => "Successful",
-                "type" => "credit",
-                "server" => "0",
-                "server_response" => "",
-                "prev_balance" => $oBal,
-                "new_balance" => $wallet->balance,
-            ]);
+                Transaction::create([
+                    "user_id" => $referral,
+                    "title" => "Referral Bonus",
+                    "amount" => $amount,
+                    "commission" => 0,
+                    "reference" => $ref,
+                    "recipient" => $user->email,
+                    "transaction_type" => "bonus",
+                    "remark" => "Successful",
+                    "type" => "credit",
+                    "server" => "0",
+                    "server_response" => "",
+                    "prev_balance" => $oBal,
+                    "new_balance" => $wallet->balance,
+                ]);
 
-            $user->referer_bonus_paid=1;
-            $user->save();
+                $user->referer_bonus_paid = 1;
+                $user->save();
+            }
         }
     }
 }
