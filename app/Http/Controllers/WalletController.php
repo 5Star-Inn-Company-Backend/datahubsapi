@@ -32,10 +32,19 @@ class WalletController extends Controller
                 'message' => 'Wallet not found',
             ], 200);
         }
+
+        $bbal = Wallet::where([['status', 1], ['user_id', Auth::id()], ['name','bonus']])->first();
+        $bonus=0;
+
+        if($bbal){
+            $bonus=$bbal->balance;
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
             'data' => $airtimes->balance,
+            'bonus' => $bonus,
         ], 200);
     }
 
