@@ -122,7 +122,7 @@ class MonnifyCreateVirtualAccount implements ShouldQueue
                         'account_name' => $response['responseBody']['accounts'][$i]['accountName'],
                         'account_number' => $response['responseBody']['accounts'][$i]['accountNumber'],
                         'provider' => $response['responseBody']['accounts'][$i]['bankName'],
-                        'domain' => 'live',
+                        'domain' => 'monnify',
                         'reference' => $response['responseBody']['accountReference'],
                         'assignment' => 'reserved',
                         'status' => 'active',

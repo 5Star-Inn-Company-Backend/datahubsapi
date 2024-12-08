@@ -39,7 +39,7 @@ class MonnifyPaymentWebhookController extends Controller
         $amount=$input['eventData']['amountPaid'];
         $ref=$input['eventData']['transactionReference'];
 
-        $va=virtual_acct::where([['account_number',$acct_no], ['provider', 'monnify']])->first();
+        $va=virtual_acct::where([['account_number',$acct_no], ['domain', 'monnify']])->first();
 
         if(!$va){
             return response()->json(['status' => false, 'message' => 'Thanks. Account number not found']);
