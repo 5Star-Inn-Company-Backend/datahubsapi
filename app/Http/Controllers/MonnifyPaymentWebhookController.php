@@ -10,12 +10,16 @@ use App\Models\virtual_acct;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class MonnifyPaymentWebhookController extends Controller
 {
     public function index(Request $request){
         $input = $request->all();
+
+        Log::info("Monnify Webhook: ".json_encode($input));
+
         $rules = array(
             "eventType" => "required",
             "eventData" => "required"
