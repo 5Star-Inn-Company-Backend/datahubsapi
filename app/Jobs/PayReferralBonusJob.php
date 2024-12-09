@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PayReferralBonusJob implements ShouldQueue
 {
@@ -47,6 +48,8 @@ class PayReferralBonusJob implements ShouldQueue
             //0 = register; 1 = funding; 2 = transaction; 9 = any
             $location = $this->location;
 
+            Log::info("Paying referral bonus to: ${$referral} from: ".$this->user. " Loc: ${$location}");
+
             if ($user->referer_bonus_paid == 1) {
                 return;
             }
@@ -57,7 +60,7 @@ class PayReferralBonusJob implements ShouldQueue
 
             if ($settings->value == $location || $settings->value == 9) {
 
-                $wallet = Wallet::where([['user_id', $referral], ['status', 1]])->first();
+                $wallet = Wallet::where([['user_id', $referral], ['status', 1], ['name', 'bonus']])->first();
 
                 $oBal = $wallet->balance;
                 $wallet->balance += $amount;
