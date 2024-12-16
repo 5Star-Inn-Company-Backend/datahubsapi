@@ -74,6 +74,7 @@ class PayReferralBonusJob implements ShouldQueue
                     "title" => "Referral Bonus",
                     "amount" => $amount,
                     "commission" => 0,
+                    "status" => 1,
                     "reference" => $ref,
                     "recipient" => $user->email,
                     "transaction_type" => "bonus",
