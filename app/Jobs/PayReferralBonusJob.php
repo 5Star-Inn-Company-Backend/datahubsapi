@@ -48,7 +48,7 @@ class PayReferralBonusJob implements ShouldQueue
             //0 = register; 1 = funding; 2 = transaction; 9 = any
             $location = $this->location;
 
-            Log::info("Paying referral bonus to: ${$referral} from: ".$this->user. " Loc: ${$location}");
+            Log::info("Paying referral bonus to: $referral from: ".$this->user. " Loc: $location");
 
             if ($user->referer_bonus_paid == 1) {
                 return;
