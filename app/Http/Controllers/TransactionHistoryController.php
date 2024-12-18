@@ -20,7 +20,7 @@ class TransactionHistoryController extends Controller
 
     public function data()
     {
-        $airtimes = Transaction::where('title', 'LIKE', '%data')->latest()->get();
+        $airtimes = Transaction::where('user_id',Auth::id())->where('title', 'LIKE', '%data')->latest()->get();
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
@@ -30,7 +30,7 @@ class TransactionHistoryController extends Controller
 
     public function totalSpent()
     {
-        $airtimes = Transaction::where('type', 'debit')->sum('amount');
+        $airtimes = Transaction::where('user_id',Auth::id())->where('type', 'debit')->sum('amount');
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
@@ -40,7 +40,7 @@ class TransactionHistoryController extends Controller
 
     public function totalFund()
     {
-        $airtimes = Transaction::where('type', 'credit')->sum('amount');
+        $airtimes = Transaction::where('user_id',Auth::id())->where('type', 'credit')->sum('amount');
         return response()->json([
             'status' => true,
             'message' => 'Fetched successfully',
