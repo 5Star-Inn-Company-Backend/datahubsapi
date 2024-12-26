@@ -33,6 +33,10 @@ Route::post('login', [UserController::class,'login']);
 Route::post('reset-password-request', [UserController::class,'forgotPassword']);
 Route::post('reset-password', [UserController::class,'reset']);
 
+Route::put('refresh-mcd-plans', function (){
+    \Illuminate\Support\Facades\Artisan::call('app:mcdplans');
+});
+
 Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('list-airtime2cash', [Airtime2CashController::class, 'listAll']);
     Route::post('purchase-airtime2cash', [Airtime2CashController::class, 'purchase']);

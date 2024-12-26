@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\tbl_serverconfig_data;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class FetchMCDPlansCommand extends Command
 {
@@ -77,6 +78,7 @@ class FetchMCDPlansCommand extends Command
 
     private function createNewPlan($rep){
         $this->info("Creating plan " . $rep['name']." ".$rep['network']);
+        Log::info("Creating plan " . $rep['name']." ".$rep['network']);
         tbl_serverconfig_data::create([
             'name' => $rep['name'],
             'dataplan' => $rep['dataplan'],
@@ -93,6 +95,7 @@ class FetchMCDPlansCommand extends Command
 
     private function updateNewPlan($id,$price,$name){
         $this->info("Updating plan $id - $name - $price");
+        Log::info("Updating plan $id - $name - $price");
         tbl_serverconfig_data::where('id',$id)->update([
             'name' => $name,
             'amount' => $price+30,
