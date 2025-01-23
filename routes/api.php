@@ -31,6 +31,7 @@ use App\Http\Controllers\UserController;
 Route::post('register', [UserController::class,'register']);
 Route::post('login', [UserController::class,'login']);
 Route::post('reset-password-request', [UserController::class,'forgotPassword']);
+Route::post('reset-password-request-app', [UserController::class,'forgotPasswordApp']);
 Route::post('reset-password', [UserController::class,'reset']);
 
 Route::put('refresh-mcd-plans', function (){

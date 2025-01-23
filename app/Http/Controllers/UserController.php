@@ -7,6 +7,7 @@ use App\Jobs\MCDCreateVirtualAccount;
 use App\Jobs\MonnifyCreateVirtualAccount;
 use App\Jobs\PayReferralBonusJob;
 use App\Models\FundingConfig;
+use App\Models\PasswordResetModel;
 use App\Models\virtual_acct;
 use Carbon\Carbon;
 use App\Models\User;
@@ -159,6 +160,12 @@ class UserController extends Controller
 
         $user=User::where('email',$request->only('email'))->first();
 
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'Email not found. Check and try again.']);
+        }
+
+
         $token = Password::createToken(
             $user
         );
@@ -174,6 +181,40 @@ class UserController extends Controller
 //        return $status === Password::RESET_LINK_SENT
 //            ? response()->json(['status' => true, 'message' => 'Reset password link sent on your email id.'])
 //            : response()->json(['status' => false, 'message' => 'Unable to send reset password link']);
+    }
+
+    public function forgotPasswordApp(Request $request)
+    {
+
+        $input = $request->all();
+        $rules = array(
+            "email" => "required|email"
+        );
+
+        $validator = Validator::make($input, $rules);
+
+        if (!$validator->passes()) {
+            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()->all()]);
+        }
+
+        $user=User::where('email',$request->only('email'))->first();
+
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'Email not found. Check and try again.']);
+        }
+
+        PasswordResetModel::where('email', $user->email)->delete();
+        $token = rand(10000,99999);
+        $password = new PasswordResetModel();
+        $password->email = $request->email;
+        $password->token = Hash::make($token);
+        $password->created_at = \Carbon\Carbon::now();
+        $password->save();
+
+        Mail::to($request->only('email'))->send(new \App\Mail\PasswordReset($token));
+
+        return response()->json(['status' => true, 'message' => 'Reset password link sent on your email id.']);
     }
 
 
